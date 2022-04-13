@@ -1,2 +1,2 @@
 # Doughnut-Catering-Service
-Website for keeping track of the customers and their order history along with the staffs who delivers the service
+A simple 3-tier application (client, server, database) where MySQL was used for the database, Node.js for the server and HTML-CSS for the client website
