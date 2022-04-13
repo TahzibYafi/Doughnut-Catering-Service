@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        <meta charset="utf-8" />
+        <title>Wheels for Doughnuts</title>
+        <link rel="stylesheet" text="text/css" href="styles.css" />
+    </head>
+
+    <div class="header">
+        <h1>Doughnut Mind If I Do<img class="logo" src="images/logo.png" alt="Logo" > </h1>
+        <p>The best doughnuts on wheels service </p>
+    </div>
+
+    <!-- Tab links -->
+    <div class="tab">
+        <button class="tablinks" onclick="openContent(event, 'Doughnuts')" id="defaultTab">Doughnuts</button>
+        <button class="tablinks" onclick="openContent(event, 'AboutUs')">About us</button>
+        <button class="tablinks" onclick="openContent(event, 'Staff')">Staff and Customers</button>
+    </div>  
+
+
+    <!-- Script for the tabs and dropdown in staff tab-->
+    <script>
+
+        // Tab Event to change what is seen
+        function openContent(evt, content) {
+
+            var i, tabcontent, tablinks;
+
+            // Get all content in the tabs and hide them
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none"; // hide all tab content
+            }
+
+            // Remove the active tab by looping through all tabs
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace("active");
+            }
+
+            // Show the current tab, and add an "active" class to the button that opened the tab
+            document.getElementById(content).style.display = "block";
+            evt.currentTarget.className += "active";
+        }
+
+        function showStaffFunctionality(select){
+            var i, selectcontent;
+
+            // Get all content in the select and hide them
+            selectcontent = document.getElementsByClassName("selectoption");
+            for (i = 0; i < selectcontent.length; i++) {
+                selectcontent[i].style.display = "none"; // hide all tab content
+            }
+
+            document.getElementById(select.value).style.display = "block";
+        }
+    
+    </script>
+
+
+    <!-- Scripts for messing with the databases-->
+    <script>
+
+        // staff DOM functions
+        function getstaff(){
+            fetch('/getstaff')
+            .then( function(response) { // After the response is recived 
+                if (response.status !== 200) {
+                    alert('Unable to get staff database. Status Code: ' + response.status);
+                    return;
+                }
+
+                return response.text().then(function(text) {
+
+                    var i, staffTextArea;
+
+                    // Get all content in the tabs and hide them
+                    staffTextArea = document.getElementsByClassName("staffDatabaseContent");
+                    for (i = 0; i < staffTextArea.length; i++) {
+                        staffTextArea[i].value = text;
+                    }
+
+
+                    //document.getElementById('staffDatabaseContentRegStaff').value = text;
+                 });
+                
+            }) 
+            .catch(function(err) { // If an error happened
+                console.log('Fetch Error :-S', err);
+            });   
+        }
+
+        function addstaff(){
+
+            let firstname = document.getElementById('AddstaffFname').value;
+            let lastname = document.getElementById('AddstaffLname').value;
+            let title = document.getElementById('Addtitle').value;
+            let salary = document.getElementById('Addsalary').value;
+            const data = { firstname, lastname, title, salary };
+
+
+            fetch('/addstaff', { // Send the json data
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            })
+            .then( function(response) { // After the response is recived 
+                if (response.status !== 200) {
+                    alert('Unable to get staff database. Status Code: ' + response.status);
+                    return;
+                }
+                alert("Successfully Added a new staff memeber to the database");
+            })
+            .catch(function(err) { // If an error happened
+                console.log('Fetch Error :-S', err);
+            });   
+        }
+
+        function updatestaff(){
+
+            let firstname = document.getElementById('UpdatestaffFname').value;
+            let lastname = document.getElementById('UpdatestaffLname').value;
+            let title = document.getElementById('Updatetitle').value;
+            let salary = document.getElementById('Updatesalary').value;
+            let staffID = document.getElementById('UpdatestaffID').value;
+            const data = { staffID, firstname, lastname, title, salary };
+
+            fetch('/updatestaff', { // Send the json data
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            })
+            .then( function(response) { // After the response is recived 
+                if (response.status !== 200) {
+                    alert('Unable to update database. Status Code: ' + response.status);
+                    return;
+                }
+                alert("Successfully Updated the staff database");
+            })
+            .catch(function(err) { // If an error happened
+                console.log('Fetch Error :-S', err);
+            });   
+        }
+
+        function deletestaff(){
+
+            let staffID = document.getElementById('DeletestaffID').value;
+            const data = { staffID };
+
+            fetch('/deletestaff', { // Send the json data
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            })
+            .then( function(response) { // After the response is recived 
+                if (response.status !== 200) {
+                    alert('Unable to Delete staff from the database. Status Code: ' + response.status);
+                    return;
+                }
+                alert('Successfully deleted staff from the database');
+            })
+            .catch(function(err) { // If an error happened
+                console.log('Fetch Error :-S', err);
+            });   
+        }
+
+
+
+        // Function to load all of the text areas as onload only gets called on the first body tag
+        function loadalltextarea(){
+            getstaff();
+            getcustomer();
+            getcustomerreports();
+        }
+
+
+        // report DOM functions
+        function getcustomerreports(){
+
+            fetch('/getcustomerreports')
+            .then( function(response) { // After the response is recived 
+                if (response.status !== 200) {
+                    alert('Unable to get customer database. Status Code: ' + response.status);
+                    return;
+                }
+
+                return response.text().then(function(text) {
+
+                    var i, customerTextArea;
+
+                    // Get all content in the tabs and hide them
+                    customerTextArea = document.getElementsByClassName("customerReportDatabaseContent");
+                    for (i = 0; i < customerTextArea.length; i++) {
+                        customerTextArea[i].value = text;
+                    }
+
+                });
+                
+            }) 
+            .catch(function(err) { // If an error happened
+                console.log('Fetch Error :-S', err);
+            });   
+        }
+
+        function addreport(){
+
+            let firstname = document.getElementById('AddCustomerReportFname').value;
+            let lastname = document.getElementById('AddCustomerReportLname').value;
+            let order_report = document.getElementById('AddOrderReport').value;
+            const data = { firstname, lastname, order_report };
+
+
+            fetch('/addreport', { // Send the json data
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            })
+            .then( function(response) { // After the response is recived 
+                if (response.status !== 200) {
+                    alert('Unable to get customer database. Status Code: ' + response.status);
+                    return;
+                }
+                alert("Successfully Added a new customer report to the database");
+            })
+            .catch(function(err) { // If an error happened
+                console.log('Fetch Error :-S', err);
+            });   
+        }
+
+
+
+        // Customer DOM functions
+        function getcustomer(){
+
+            fetch('/getcustomer')
+            .then( function(response) { // After the response is recived 
+                if (response.status !== 200) {
+                    alert('Unable to get customer database. Status Code: ' + response.status);
+                    return;
+                }
+
+                return response.text().then(function(text) {
+
+                    var i, customerTextArea;
+
+                    // Get all content in the tabs and hide them
+                    customerTextArea = document.getElementsByClassName("customerDatabaseContent");
+                    for (i = 0; i < customerTextArea.length; i++) {
+                        customerTextArea[i].value = text;
+                    }
+
+                 });
+                
+            }) 
+            .catch(function(err) { // If an error happened
+                console.log('Fetch Error :-S', err);
+            });   
+        }
+
+        function addcustomer(){
+
+            let firstname = document.getElementById('AddCustomerFname').value;
+            let lastname = document.getElementById('AddCustomereLname').value;
+            let order_amount = document.getElementById('AddCustomerOrderAmount').value;
+            const data = { firstname, lastname, order_amount };
+
+
+            fetch('/addcustomer', { // Send the json data
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            })
+            .then( function(response) { // After the response is recived 
+                if (response.status !== 200) {
+                    alert('Unable to get customer database. Status Code: ' + response.status);
+                    return;
+                }
+                alert("Successfully Added a new customer to the database");
+            })
+            .catch(function(err) { // If an error happened
+                console.log('Fetch Error :-S', err);
+            });   
+        }
+
+        function updatecustomer(){
+
+            let firstname = document.getElementById('UpdatecustomerFname').value;
+            let lastname = document.getElementById('UpdatecustomerLname').value;
+            let order_amount = document.getElementById('UpdateOrderAmount').value;
+            let customerID = document.getElementById('UpdatecustomerID').value;
+            const data = { customerID, firstname, lastname, order_amount };
+
+            fetch('/updatecustomer', { // Send the json data
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            })
+            .then( function(response) { // After the response is recived 
+                if (response.status !== 200) {
+                    alert('Unable to update database. Status Code: ' + response.status);
+                    return;
+                }
+                alert("Successfully Updated the customer database");
+            })
+            .catch(function(err) { // If an error happened
+                console.log('Fetch Error :-S', err);
+            });   
+        }
+
+        function deletecustomer(){
+
+            let customerID = document.getElementById('DeletecustomerID').value;
+            const data = { customerID };
+
+            fetch('/deletecustomer', { // Send the json data
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            })
+            .then( function(response) { // After the response is recived 
+                if (response.status !== 200) {
+                    alert('Unable to Delete customer from the database. Status Code: ' + response.status);
+                    return;
+                }
+                alert('Successfully deleted customer from the database');
+            })
+            .catch(function(err) { // If an error happened
+                console.log('Fetch Error :-S', err);
+            });   
+        }
+
+    </script>
+
+  
+    <!-- Tab content -->
+    <!-- NOTE: The item with the display block is displayed by default -->
+    <div id="Doughnuts" class="tabcontent" style="display: block;">
+        <h3>Current Doughnuts Available</h3>
+
+        <table>
+            <tr>
+                <th>Doughnut</th>
+                <th>Description</th>
+                <th>Image</th>
+            </tr>
+            <tr>
+                <td>Classic Glazed Doughnut</td>
+                <td>A classic glazed yeasted doughnut</td>
+                <td><img class="doughnuts_pic" src="images/glaze.png" alt="Glazed Doughnut"> </td>
+            </tr>
+            <tr>
+                <td>White Chocolate Doughnut</td>
+                <td>Premium white chocolate glaze with rainbow sprinkels on top </td>
+                <td><img class="doughnuts_pic" src="images/white_sprinkle.png" alt="White Sprinkled Doughnut"> </td>
+            </tr>
+            <tr>
+                <td>Caramel Doughnut</td>
+                <td>Caramel glazes doughnut with caramel chocolate shavings </td>
+                <td><img class="doughnuts_pic" src="images/caramel.png" alt="White Sprinkled Doughnut"> </td>
+            </tr>
+            <tr>
+                <td>Dark Chocolate Doughnut</td>
+                <td>Dark chocolate glazed doughnut with sprinkles on the side </td>
+                <td><img class="doughnuts_pic" src="images/chcoc_sidesprinkle.png" alt="White Sprinkled Doughnut"> </td>
+            </tr>
+            <tr>
+                <td>Milk Chocolate Sprinkle Doughnut</td>
+                <td>Classic milk chocolate sprinkle doughnut </td>
+                <td><img class="doughnuts_pic" src="images/choc_allsprinkle.png" alt="White Sprinkled Doughnut"> </td>
+            </tr>
+            <tr>
+                <td>Rasberry filled Doughnut</td>
+                <td>Raspberry jam filled doughnut with powdered sugar dusted on top </td>
+                <td><img class="doughnuts_pic" src="images/jelly_filled.png" alt="White Sprinkled Doughnut"> </td>
+            </tr>
+            <tr>
+                <td>Strawberry White Chocolate Doughnut</td>
+                <td>Strawberry glazed doughnut with white chocolate shavings on top</td>
+                <td><img class="doughnuts_pic" src="images/strawberry_whitechoc.png" alt="White Sprinkled Doughnut"> </td>
+            </tr>
+          </table>
+    </div>
+
+    <div id="AboutUs" class="tabcontent">
+        <h3>About Us</h3>
+        <p>Our Co-creators Mason Olchoway and Tahzib Yafi really enjoyed doughnuts. No matter the form or the style of doughnut, we like them all.
+            We created this doughnut delivery service so more people could enjoy our hand made doughnuts. We have been making doughnuts for at least 1 hour at this point.
+            We can't wait for you to make use rich.
+        </p>
+    </div>
+      
+    <div id="Staff" class="tabcontent">
+        <!--Dropdown menu in the staff tab-->
+        <select name="staffcommands" id="staff_functionality" onchange="showStaffFunctionality(this)">
+            <option>---Select Option---</option>
+            <option value="RegStaff">Add Staff</option>
+            <option value="UpdateStaff">Update Staff</option>
+            <option value="DeleteStaff">Delete Staff</option>
+            <option value="RegCustomer">Add Customers</option>
+            <option value="UpdateCustomer">Update Customers</option>
+            <option value="DeleteCustomer">Delete Customers</option>
+            <option value="AllData">All Data</option>
+            <option value="AddReport">Add Report</option>
+        </select>
+
+
+
+        <!-- Adding staff form  -->
+        <div class="selectoption" id="RegStaff">
+
+            <!--Current staff textarea-->
+            <body onload="loadalltextarea();">
+                <form>
+                    <label style="float: right;"  for="staffDatabaseContent"><b>Current Staff in the Database</b></label>
+                    <br>
+                    <textarea disabled="true" class="staffDatabaseContent" id="staffDatabaseContent"></textarea>
+                    <button class="refreshbtn" type="submit" value="GET">Refresh</button>
+                </form>
+            </body>
+            
+            <h3>Add Staff </h3>
+            <p>Fill in this form to add staff to the database.</p>
+            <p>The current staff in the system are shown to the right</p>
+            <form onSubmit="addstaff();" class="inputform" id="RegStaffform">
+                <hr>
+                <label for="staff_firstname"><b>First Name:</b></label><br>
+                <input type="text" name="staff_firstname" id="AddstaffFname" required><br>
+
+                <label for="staff_lastname"><b>Last Name:</b></label><br>
+                <input type="text" name="staff_firstname" id="AddstaffLname" required><br>
+
+                <label for="staff_title"><b>Job Title:</b></label><br>
+                <input type="text" name="staff_title" id="Addtitle" required><br>
+
+                <label for="staff_salary"><b>Salary:</b></label><br>
+                <input type="number" name="staff_salary" id="Addsalary" required>
+                <hr>
+                
+                <button class="submitbtn" type="submit" value="Post">Add Staff</button><br>
+            </form>
+        </div>
+
+        <!-- Updating staff form -->
+        <div class="selectoption" id="UpdateStaff">
+
+            <!--Current staff textarea-->
+            <body onload="loadalltextarea();">
+                <form>
+                    <label style="float: right;"  for="staffDatabaseContent"><b>Current Staff in the Database</b></label>
+                    <br>
+                    <textarea disabled="true" class="staffDatabaseContent" id="staffDatabaseContent"></textarea>
+                    <button class="refreshbtn" type="submit" value="GET">Refresh</button>
+                </form>
+            </body>
+               
+            <h3>Update Staff </h3>
+            <p>Fill in this form to update the info of the staff in the databse.</p>
+            <p>The Staff ID field is required in order to update the staff.</p>
+            <form onSubmit="updatestaff();" class="inputform" id="UpdateStaffform">
+                <hr>
+                <label for="staff_ID"><b>Staff ID:</b></label><br>
+                <input type="number" name="staff_ID" id="UpdatestaffID" required><br>
+
+                <label for="staff_firstname"><b>First Name:</b></label><br>
+                <input type="text" name="staff_firstname" id="UpdatestaffFname"><br>
+
+                <label for="staff_lastname"><b>Last Name:</b></label><br>
+                <input type="text" name="staff_firstname" id="UpdatestaffLname"><br>
+
+                <label for="staff_title"><b>Job Title:</b></label><br>
+                <input type="text" name="staff_title" id="Updatetitle"><br>
+
+                <label for="staff_salary"><b>Salary:</b></label><br>
+                <input type="number" name="staff_salary" id="Updatesalary">
+                <hr>
+                
+                <button class="submitbtn" type="submit" value="PUT">Update Staff</button><br>
+            </form>
+            
+        </div>
+
+        <!-- Delete staff form -->
+        <div class="selectoption" id="DeleteStaff">
+
+            <!--Current staff textarea-->
+            <body onload="loadalltextarea();">
+                <form>
+                    <label style="float: right;"  for="staffDatabaseContent"><b>Current Staff in the Database</b></label>
+                    <br>
+                    <textarea disabled="true" class="staffDatabaseContent" id="staffDatabaseContent"></textarea>
+                    <button class="refreshbtn" type="submit" value="GET">Refresh</button>
+                </form>
+            </body>
+               
+            <h3>Delete Staff </h3>
+            <p>Fill in this form to delete staff.</p>
+            <form onSubmit="deletestaff();" class="inputform" id="DeleteStaffform">
+                <hr>
+
+                <label for="staff_ID"><b>Staff ID:</b></label><br>
+                <input type="number" name="staff_ID" id="DeletestaffID" required><br><br>
+                
+                <button class="submitbtn" type="submit" value="DELETE">Delete Staff</button><br>
+            </form>
+            
+        </div>
+
+
+
+        <!-- Adding customer form -->
+        <div class="selectoption" id="RegCustomer">
+
+            <!--Current Customer textarea-->
+            <body onload="loadalltextarea();">
+                <form>
+                    <label style="float: right;"  for="customerDatabaseContent"><b>Current Customers in the Database</b></label>
+                    <br>
+                    <textarea disabled="true" class="customerDatabaseContent" id="customerDatabaseContent"></textarea>
+                    <button class="refreshbtn" type="submit" value="GET">Refresh</button>
+                </form>
+            </body>
+                
+            <h3>Add Customer</h3>
+            <p>Fill in this form to add customer in the databse.</p>
+            <form onSubmit="addcustomer();" class="inputform" id="AddCustomerform">
+                <hr>
+                <label for="customer_firstname"><b>First Name:</b></label><br>
+                <input type="text" name="customer_firstname" id="AddCustomerFname"><br>
+
+                <label for="customer_lastname"><b>Last Name:</b></label><br>
+                <input type="text" name="customer_lastname" id="AddCustomereLname"><br>
+
+                <label for="order_amount"><b>Order Amount:</b></label><br>
+                <input type="number" name="order_amount" id="AddCustomerOrderAmount">
+                <hr>
+                
+                <button class="submitbtn" type="submit" value="POST">Add Customer</button><br>
+            </form>
+        </div>
+
+        <!-- Update customer form -->
+        <div class="selectoption" id="UpdateCustomer">
+
+            <!--Current Customer textarea-->
+            <body onload="loadalltextarea();">
+                <form>
+                    <label style="float: right;"  for="customerDatabaseContent"><b>Current Customers in the Database</b></label>
+                    <br>
+                    <textarea disabled="true" class="customerDatabaseContent" id="customerDatabaseContent"></textarea>
+                    <button class="refreshbtn" type="submit" value="GET">Refresh</button>
+                </form>
+            </body>
+
+            <h3>Updata Customer Data</h3>
+            <p>Fill in this form to update the info of the customer in the databse.</p>
+            <p>The Customer ID field is required in order to update the customer.</p>
+            <form onSubmit="updatecustomer();" class="inputform" id="UpdateStaffform">
+                <hr>
+                <label for="customer_ID"><b>Customer ID:</b></label><br>
+                <input type="number" name="customer_ID" id="UpdatecustomerID" required><br>
+
+                <label for="customer_firstname"><b>First Name:</b></label><br>
+                <input type="text" name="customer_firstname" id="UpdatecustomerFname"><br>
+
+                <label for="customer_lastname"><b>Last Name:</b></label><br>
+                <input type="text" name="customer_firstname" id="UpdatecustomerLname"><br>
+
+                <label for="order_amount"><b>Order Amount:</b></label><br>
+                <input type="number" name="order_amount" id="UpdateOrderAmount">
+                <hr>
+                
+                <button class="submitbtn" type="submit" value="PUT">Update Customer</button><br>
+            </form>
+        </div>
+
+        <!-- Delete customer form -->
+        <div class="selectoption" id="DeleteCustomer">
+
+            <!--Current Customer textarea-->
+            <body onload="loadalltextarea();">
+                <form>
+                    <label style="float: right;"  for="customerDatabaseContent"><b>Current Customers in the Database</b></label>
+                    <br>
+                    <textarea disabled="true" class="customerDatabaseContent" id="customerDatabaseContent"></textarea>
+                    <button class="refreshbtn" type="submit" value="GET">Refresh</button>
+                </form>
+            </body>
+
+            <h3>Delete Customer Data</h3>
+            <p>Fill in this form to delete customer.</p>
+            <form onSubmit="deletecustomer();" class="inputform" id="DeleteCustomerform">
+                <hr>
+                <label for="customer_ID"><b>Customer ID:</b></label><br>
+                <input type="number" name="customer_ID" id="DeletecustomerID" required><br><br>
+                <hr>
+                
+                <button class="submitbtn" type="submit" value="DELETE">Delete Customer</button><br>
+            </form>
+            
+        </div>
+
+
+        
+        <!-- All data. Customer and staff -->
+        <div class="selectoption" id="AllData">
+            <h3>All Data </h3>
+
+            <hr>
+            <!--Current Customer textarea-->
+            <body onload="loadalltextarea();">
+                <form>
+                    <label for="customerDatabaseContent"><b>Current Customers in the Database</b></label>
+                    <br>
+                    <textarea style="float:none; width: 800px; height: 200px;" disabled="true" class="customerDatabaseContent" id="customerDatabaseContent"></textarea>
+                </form>
+            </body>
+
+            <!--Current staff textarea-->
+            <body onload="loadalltextarea();">
+                <form>
+                    <label for="staffDatabaseContent"><b>Current Staff in the Database</b></label>
+                    <br>
+                    <textarea style="float:none; width: 800px; height: 200px;" disabled="true" class="staffDatabaseContent" id="staffDatabaseContent"></textarea>
+                </form>
+            </body>
+
+            <!--Current Customer Reports textarea-->
+            <body onload="loadalltextarea();">
+                <form>
+                    <label for="customerReportDatabaseContent"><b>Current Customers Reports in the Database</b></label>
+                    <br>
+                    <textarea style="float:none; width: 800px; height: 200px;" disabled="true" class="customerReportDatabaseContent" id="customerReportDatabaseContent"></textarea>
+                </form>
+            </body>
+            
+            <hr>
+        </div>
+
+        <!-- Add a customer report form -->
+        <div class="selectoption" id="AddReport">
+
+             <!--Current Customer textarea-->
+             <br><body onload="loadalltextarea();">
+                <form>
+                    <label for="customerDatabaseContent"><b>Current Customers in the Database</b></label>
+                    <br>
+                    <textarea style="float:none;" disabled="true" class="customerDatabaseContent" id="customerDatabaseContent"></textarea>
+                </form>
+            </body>
+
+            <!--Current Customer Reports textarea-->
+            <body onload="loadalltextarea();">
+                <form>
+                    <label for="customerReportDatabaseContent"><b>Current Customers Reports in the Database</b></label>
+                    <br>
+                    <textarea style="float:none;" disabled="true" class="customerReportDatabaseContent" id="customerReportDatabaseContent"></textarea>
+                </form>
+            </body>
+
+            <h3>Add Customer Report</h3>
+            <p>Fill in this form to add a report to a customer.</p>
+            <p>The Customer First and Lastname are required in order to add a report for the customer.</p>
+            <form onSubmit="addreport();" class="inputform" id="UpdateStaffform">
+                <hr>
+                <label for="customer_firstname"><b>First Name:</b></label><br>
+                <input type="text" name="customer_firstname" id="AddCustomerReportFname" required><br>
+
+                <label for="customer_lastname"><b>Last Name:</b></label><br>
+                <input type="text" name="customer_firstname" id="AddCustomerReportLname" required><br>
+
+                <label for="order_report"><b>Order Report:</b></label><br>
+                <input type="text" name="order_report" id="AddOrderReport">
+                <hr>
+                
+                <button class="submitbtn" type="submit" value="POST">Add Report</button><br>
+            </form>
+
+        </div>
+
+
+
+    </div>
+
+
+
+
+
+
+</html>
